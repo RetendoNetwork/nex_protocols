@@ -34,6 +34,7 @@ class StorageManagerProtocol(IntEnum):
 
     def handle_packet(self, packet: PacketInterface):
         globals = Globals()
+        
         message = packet.rmc_message()
 
         if not message.is_request or message.protocol_id != self.PROTOCOL_ID:
