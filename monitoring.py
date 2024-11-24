@@ -56,14 +56,40 @@ class MonitoringProtocol(IntEnum):
 class Monitoring:
     def ping_daemon(packet: PacketInterface):
         globals = Globals()
+
+        if MonitoringProtocol.PingDaemon is None:
+            err_message = "Monitoring::PingDaemon not implemented"
+            err = Error(1, err_message) # TODO - Replace 1 to Core Implemented Error Code
+            globals.logger.warning(err.message)
+            globals.respond_error(packet, MonitoringProtocol.PROTOCOL_ID, err)
+            return
+
         request = packet.rmc_message()
         call_id = request.call_id
 
-        globals.respond(packet)
+        rmc_message, rmc_error = MonitoringProtocol.PingDaemon(None, packet, call_id)
+        if rmc_error:
+            globals.respond_error(packet, MonitoringProtocol.PROTOCOL_ID, rmc_error)
+            return
+
+        globals.respond(packet, rmc_message)
         
     def get_cluster_members(packet: PacketInterface):
         globals = Globals()
+
+        if MonitoringProtocol.GetClusterMembers is None:
+            err_message = "Monitoring::GetClusterMembers not implemented"
+            err = Error(1, err_message)
+            globals.logger.warning(err.message)
+            globals.respond_error(packet, MonitoringProtocol.PROTOCOL_ID, err)
+            return
+
         request = packet.rmc_message()
         call_id = request.call_id
 
-        globals.respond(packet)
+        rmc_message, rmc_error = MonitoringProtocol.GetClusterMembers(None, packet, call_id)
+        if rmc_error:
+            globals.respond_error(packet, MonitoringProtocol.PROTOCOL_ID, call_id)
+            return
+
+        globals.respond(packet, rmc_message)
